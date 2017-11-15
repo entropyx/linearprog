@@ -179,18 +179,8 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 			if Pivot[0][i] > 0 {
 				solutions[i-1] = 0
 			} else if Pivot[0][i] == 0 && Pivot[j][i] == 1 {
-				solutions[i-1] = Pivot[j][columns-1]
+				solutions[i-1] = Round(Pivot[j][columns-1], 2)
 			}
-		}
-	}
-
-	numberpos := 0
-	numberneg := 0
-	for i := 0; i < len(solutions); i++ {
-		if solutions[i] >= 1 {
-			numberpos = numberpos + 1
-		} else {
-			numberneg = numberneg + 1
 		}
 	}
 
