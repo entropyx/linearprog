@@ -1,8 +1,8 @@
 package linearprog
 
 import (
-	"fmt"
 	"math"
+	"runtime"
 )
 
 func Round(num float64, precision int) float64 {
@@ -13,14 +13,22 @@ func Round(num float64, precision int) float64 {
 	return out
 }
 
-func Matrix(A map[int]map[int]float64) {
-	for i := 0; i < len(A); i++ {
-		var row []float64
-		for j := 0; j < len(A[i]); j++ {
-			row = append(row, A[i][j])
+func DifferenceRows(Pivot map[int]map[int]float64, rowsids []int, colpivot, rowspivot, columns int, c chan map[int]map[int]float64) {
+	Pivot2 := make(map[int]map[int]float64)
+	rows := len(rowsids)
+
+	for i := 0; i < rows; i++ {
+		lowervalue := Pivot[rowsids[i]][colpivot]
+		if rowsids[i] != rowspivot && lowervalue != 0 {
+			for j := 0; j < columns; j++ {
+				if Pivot2[rowsids[i]] == nil {
+					Pivot2[rowsids[i]] = map[int]float64{}
+				}
+				Pivot2[rowsids[i]][j] = (-lowervalue)*(Pivot[rowspivot][j]) + Pivot[rowsids[i]][j]
+			}
 		}
-		fmt.Println(row)
 	}
+	c <- Pivot2
 }
 
 func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []string) (map[int]float64, float64) {
@@ -58,8 +66,44 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 		}
 	}
 
-	for {
+	n := runtime.NumCPU()
+	r := 0.00
+	var N float64
+	var rowsids [][]int
+	var ids []int
+	if len(Pivot) >= n {
+		N = math.Floor(float64(len(Pivot)) / float64(n))
+	} else {
+		N = float64(len(Pivot)) / float64(n)
+	}
 
+	s1, s2 := 0.00, 1.00
+
+	for i := range Pivot {
+		if s1 < (s2*N + r) {
+			ids = append(ids, int(i))
+			if s1 == ((float64(n) * N) + r - 1) {
+				rowsids = append(rowsids, ids)
+			}
+		} else {
+			s2++
+			if s2 == float64(n) {
+				r = math.Mod(float64(len(Pivot)), float64(n))
+			}
+			rowsids = append(rowsids, ids)
+			ids = []int{i}
+			if s1 == ((float64(n) * N) + r - 1) {
+				rowsids = append(rowsids, ids)
+			}
+		}
+		s1++
+	}
+
+	if len(rowsids) < n {
+		n = len(rowsids)
+	}
+
+	for {
 		colpivot := 1
 		min := Pivot[0][1]
 		for i := 1; i < columns; i++ {
@@ -76,6 +120,7 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 			}
 
 		}
+
 		min = math.Inf(1)
 		rowspivot := 1
 		for k := 1; k < rows; k++ {
@@ -87,18 +132,28 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 				}
 			}
 		}
+
 		elementpivot := Pivot[rowspivot][colpivot]
 		for j := 0; j < columns; j++ {
 			Pivot[rowspivot][j] = float64(Pivot[rowspivot][j]) / float64(elementpivot)
 		}
-		for i := 0; i < rows; i++ {
-			lowervalue := Pivot[i][colpivot]
-			for j := 0; j < columns; j++ {
-				if i != rowspivot {
-					Pivot[i][j] = (-lowervalue)*(Pivot[rowspivot][j]) + Pivot[i][j]
-				}
+
+		c := make(chan map[int]map[int]float64)
+		for i := 0; i < n; i++ {
+			go DifferenceRows(Pivot, rowsids[i], colpivot, rowspivot, columns, c)
+		}
+
+		u := make([]map[int]map[int]float64, n)
+		for i := 0; i < n; i++ {
+			u[i] = <-c
+		}
+
+		for i := 0; i < n; i++ {
+			for k := range u[i] {
+				Pivot[k] = u[i][k]
 			}
 		}
+
 		number := 0
 		numberfeasible := 0
 		for i := 0; i < columns; i++ {
@@ -124,10 +179,21 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 			if Pivot[0][i] > 0 {
 				solutions[i-1] = 0
 			} else if Pivot[0][i] == 0 && Pivot[j][i] == 1 {
-				solutions[i-1] = Round(Pivot[j][columns-1], 2)
+				solutions[i-1] = Pivot[j][columns-1]
 			}
 		}
 	}
 
+	numberpos := 0
+	numberneg := 0
+	for i := 0; i < len(solutions); i++ {
+		if solutions[i] >= 1 {
+			numberpos = numberpos + 1
+		} else {
+			numberneg = numberneg + 1
+		}
+	}
+
 	return solutions, opt
+
 }

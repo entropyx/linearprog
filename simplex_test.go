@@ -109,4 +109,26 @@ func TestSimplex(t *testing.T) {
 		})
 	})
 
+	Convey("Given the following matrix maximization problem 7 ...", t, func() {
+		a := []float64{1450, 1450, 1450, 3950}
+		b := []float64{40064, 1.25, 1.25, 1.25, 1.25, 0.96, 0.68, 0.39, 0.1}
+		constdir := []string{"<=", "<=", "<=", "<=", "<=", ">=", ">=", ">=", ">="}
+		A := map[int]map[int]float64{
+			1: map[int]float64{1: 1430.86, 2: 1430.86, 3: 1430.86, 4: 1430.86},
+			2: map[int]float64{1: 1, 2: 0, 3: 0, 4: 0},
+			3: map[int]float64{1: 0, 2: 1, 3: 0, 4: 0},
+			4: map[int]float64{1: 0, 2: 0, 3: 1, 4: 0},
+			5: map[int]float64{1: 0, 2: 0, 3: 0, 4: 1},
+			6: map[int]float64{1: 1, 2: 0, 3: 0, 4: 0},
+			7: map[int]float64{1: 0, 2: 1, 3: 0, 4: 0},
+			8: map[int]float64{1: 0, 2: 0, 3: 1, 4: 0},
+			9: map[int]float64{1: 0, 2: 0, 3: 0, 4: 1},
+		}
+		Convey("The solutions to 7 should be ... ", func() {
+			solutions, _ := Simplex(A, b, a, constdir)
+			out := map[int]float64{0: 1.25, 1: 1.25, 2: 1.25, 3: 1.25}
+			So(solutions, ShouldResemble, out)
+		})
+	})
+
 }
