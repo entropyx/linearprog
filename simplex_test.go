@@ -1,10 +1,71 @@
 package linearprog
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+type Metrics struct {
+	Date                 []string
+	AvgCPC               []float64
+	Clicks               []float64
+	Roas                 []float64
+	Prices               []float64
+	Impressions          []float64
+	Conversions          []float64
+	TotalValueConversion []float64
+	Cost                 []float64
+	AvgCPM               []float64
+	ClickShare           []float64
+	ImpressionShare      []float64
+	ConversionRate       []float64
+	Ctr                  []float64
+	CostPerConversion    []float64
+	CostConvertedClick   []float64
+	ProductCost          []float64
+	PositionPrice        int
+	RoasBrand            float64
+	RoasCategory         float64
+	AvgPriceBrand        float64
+	AvgPriceCategory     float64
+	CpcBrand             float64
+	CpcCategory          float64
+	Price                float64
+	MinimumCpc           float64
+	Brand                string
+	Category             string
+	ProductType          string
+	RoasWithoutProd      float64
+	AllConversionValue   float64
+	TotalCost            float64
+	TotalClicks          float64
+	TotalConversions     float64
+	TotalImpressions     float64
+	TotalAvgCPM          float64
+	TotalAvgCPC          float64
+	Distances            float64
+	Rank                 int
+	Pareto               bool
+}
+
+func GetPages(path string) map[string]*Metrics {
+	path = os.Getenv("GOPATH") + path
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Error(err.Error())
+		os.Exit(1)
+	}
+
+	var c map[string]*Metrics
+	json.Unmarshal(raw, &c)
+	return c
+}
 
 func TestSimplex(t *testing.T) {
 	Convey("Given the following matrix maximization problem 1 ...", t, func() {
@@ -129,6 +190,53 @@ func TestSimplex(t *testing.T) {
 			out := map[int]float64{0: 1.25, 1: 1.25, 2: 1.25, 3: 1.25}
 			So(solutions, ShouldResemble, out)
 		})
+	})
+
+	Convey("Proof of Doto...", t, func() {
+		//var date,avgcpc,clicks,roas,prices,impressions,conversions,cost,totalvalueconversion type
+		//today := time.Now()
+		//layout := "2006-01-02"
+		path := "/src/github.com/entropyx/linearprog/doto.json"
+		data := GetPages(path)
+		//max, _ := time.Parse(layout, "2017-08-22")
+		fmt.Println(data)
+
+		fmt.Println(data["shopify_mx_1098781261868_10619801862188"].Clicks)
+
+		// for k := range data {
+		// 	l := len(data[k].Date)
+		// 	for i := 0; i < l; i++ {
+		// 		date, _ := time.Parse(layout, data[k].Date[i])
+		// 		if int(max.Sub(date).Hours()/24) < 0 {
+		// 			max = date
+		// 		}
+		// 		if data[k].ProductCost == nil {
+		// 			data[k].ProductCost = []float64{}
+		// 		}
+		// 		data[k].ProductCost = append(data[k].ProductCost, data[k].Prices[i]/(1.0+0.2))
+		// 		data[k].ImpressionShare[i] = data[k].ImpressionShare[i] * 100
+		// 	}
+		// }
+		//
+		// days := int(today.Sub(max).Hours() / 24)
+		//
+		// for k := range data {
+		// 	l := len(data[k].Date)
+		// 	for i := 0; i < l; i++ {
+		// 		date, _ := time.Parse(layout, data[k].Date[i])
+		// 		data[k].Date[i] = date.AddDate(0, 0, days).Format(layout)
+		// 	}
+		// 	data[k].CpcBrand = 1.00
+		// 	data[k].CpcCategory = 1.00
+		// }
+		//
+		// fmt.Println(data["shopify_mx_1098781261868_10619801862188"].AvgCPC)
+
+		// Convey("The solutions to dataset of doto...", func() {
+		// 	solutions, _ := Simplex(A, b, a, constdir)
+		// 	out := map[int]float64{0: 1.25, 1: 1.25, 2: 1.25, 3: 1.25}
+		// 	So(solutions, ShouldResemble, out)
+		// })
 	})
 
 }
