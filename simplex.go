@@ -32,7 +32,6 @@ func DifferenceRows(Pivot map[int]map[int]float64, rowsids []int, colpivot, rows
 	c <- Pivot2
 }
 
-//PENSAR EN COMO LLENAR DE CEROS EL MAPA
 //func InitMap(rows, columns int) map[int]map[int]float64 {
 func InitMap(rows int) map[int]map[int]float64 {
 	Pivot := make(map[int]map[int]float64)
@@ -118,15 +117,13 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 	if len(rowsids) < n {
 		n = len(rowsids)
 	}
-	//ARwin quedaste aqui
-	//operaciones internas del pivote, se puede mejorar
+
+	//se consigue la fila y columna pivote, para tener el elementpivote
 	for {
 		colpivot := 1
 		min := Pivot[0][1]
-		fmt.Println("min", min)
 		for i := 1; i < columns; i++ {
 			if feasible {
-				fmt.Println("feasible", feasible)
 				if Pivot[0][i] < 0 && min > Pivot[0][i] {
 					colpivot = i
 					min = Pivot[0][i]
@@ -150,12 +147,14 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 				}
 			}
 		}
-
+		/////////////////////////////
 		elementpivot := Pivot[rowspivot][colpivot]
+		fmt.Println("elmento", elementpivot)
 		for j := 0; j < columns; j++ {
 			Pivot[rowspivot][j] = float64(Pivot[rowspivot][j]) / float64(elementpivot)
+			fmt.Println("cociente", Pivot[rowspivot][j])
 		}
-
+		///////////////////////////mejorar ver como pasar el tipo de datos anteriores a funciones
 		c := make(chan map[int]map[int]float64)
 		for i := 0; i < n; i++ {
 			go DifferenceRows(Pivot, rowsids[i], colpivot, rowspivot, columns, c)
@@ -172,16 +171,24 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 			}
 		}
 
-		number := 0
-		numberfeasible := 0
+		number, numberfeasible := 0, 0
+		// for i := 0; i < columns; i++ {
+		// 	if Pivot[0][i] >= 0 {
+		// 		number = number + 1
+		// 	}
+		// 	if Pivot[0][i] >= 0 && i < len(a) {
+		// 		numberfeasible = numberfeasible + 1
+		// 	}
+		// }
+
 		for i := 0; i < columns; i++ {
 			if Pivot[0][i] >= 0 {
 				number = number + 1
-			}
-			if Pivot[0][i] >= 0 && i < len(a) {
+			} else {
 				numberfeasible = numberfeasible + 1
 			}
 		}
+
 		if numberfeasible == len(a) {
 			feasible = true
 		}
@@ -191,7 +198,9 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 	}
 
 	opt := Pivot[0][columns-1]
+	//checar como evitar este ultimo paso con la solucion, ver por donde viene o previamente sacarla
 
+	//Se puede guardar la columna que tiene solo 1 y ceros, de ahi sacamos la fila y la solucion final de esa variable sera: Solucion[columna guardada digamos la 2]= resultado de la ultima columna de la fila que tiene el 1.
 	for i := 1; i <= len(a); i++ {
 		for j := 1; j <= len(b); j++ {
 			if Pivot[0][i] > 0 {
@@ -202,6 +211,7 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 		}
 	}
 
+	fmt.Println("valor opt", opt, "soluciones", solutions)
 	return solutions, opt
 
 }
