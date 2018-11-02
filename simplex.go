@@ -5,19 +5,19 @@ import (
 	"runtime"
 )
 
-func Round(num float64, precision int) float64 {
+func Round(number float64, precision int) float64 {
 	var out float64
 	v1 := math.Pow(10, float64(precision))
-	v2 := int(num*v1 + math.Copysign(0.5, num*v1))
+	v2 := int(number*v1 + math.Copysign(0.5, number*v1))
 	out = float64(v2) / v1
 	return out
 }
 
+//Aqui se puede mejorar si se consigue una recurrencia de los 0, cada cuanto hay cero, entonces no sumarlo.
 func DifferenceRows(Pivot map[int]map[int]float64, rowsids []int, colpivot, rowspivot, columns int, c chan map[int]map[int]float64) {
 	Pivot2 := make(map[int]map[int]float64)
-	rows := len(rowsids)
-
-	for i := 0; i < rows; i++ {
+	numberrows := len(rowsids)
+	for i := 0; i < numberrows; i++ {
 		lowervalue := Pivot[rowsids[i]][colpivot]
 		if rowsids[i] != rowspivot && lowervalue != 0 {
 			for j := 0; j < columns; j++ {
@@ -31,22 +31,51 @@ func DifferenceRows(Pivot map[int]map[int]float64, rowsids []int, colpivot, rows
 	c <- Pivot2
 }
 
-func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []string) (map[int]float64, float64) {
-	var feasible bool
+//func InitMap(rows, columns int) map[int]map[int]float64 {
+func InitMap(rows int) map[int]map[int]float64 {
 	Pivot := make(map[int]map[int]float64)
-	solutions := make(map[int]float64)
-	var rows, columns int
-	rows = len(b) + 1
-	columns = len(a) + len(b) + 2
 
 	for i := 0; i < rows; i++ {
 		Pivot[i] = map[int]float64{}
 	}
-	for i := 0; i < rows; i++ {
-		for j := 0; j < columns; j++ {
-			Pivot[i][j] = 0
-		}
+
+	// for i := 0; i < rows; i++ {
+	// 	Pivot[i] = map[int]float64{}
+	// 	for j := 0; j < columns; j++ {
+	// 		Pivot[i][j] = 0
+	// 	}
+	// }
+	return Pivot
+}
+
+func PartitionForGorutine(Pivot map[int]map[int]float64) (float64, int) {
+	n := runtime.NumCPU()
+	var N float64
+	if len(Pivot) >= n {
+		N = math.Floor(float64(len(Pivot)) / float64(n))
+	} else {
+		N = float64(len(Pivot)) / float64(n)
 	}
+	return N, n
+}
+
+func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []string) (map[int]float64, float64) {
+	var feasible bool
+	var rows, columns int
+	solutions := make(map[int]float64)
+	rows = len(b) + 1
+	columns = len(a) + len(b) + 2
+
+	//
+	// for i := 0; i < rows; i++ {
+	// 	Pivot[i] = map[int]float64{}
+	// }
+	// for i := 0; i < rows; i++ {
+	// 	for j := 0; j < columns; j++ {
+	// 		Pivot[i][j] = 0
+	// 	}
+	// }
+	Pivot := InitMap(rows)
 
 	Pivot[0][0] = 1.00
 	for i := 0; i < rows; i++ {
@@ -66,17 +95,11 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 		}
 	}
 
-	n := runtime.NumCPU()
+	N, n := PartitionForGorutine(Pivot)
+
 	r := 0.00
-	var N float64
 	var rowsids [][]int
 	var ids []int
-	if len(Pivot) >= n {
-		N = math.Floor(float64(len(Pivot)) / float64(n))
-	} else {
-		N = float64(len(Pivot)) / float64(n)
-	}
-
 	s1, s2 := 0.00, 1.00
 
 	for i := range Pivot {
@@ -118,7 +141,6 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 					min = Pivot[0][i]
 				}
 			}
-
 		}
 
 		min = math.Inf(1)
@@ -154,8 +176,7 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 			}
 		}
 
-		number := 0
-		numberfeasible := 0
+		number, numberfeasible := 0, 0
 		for i := 0; i < columns; i++ {
 			if Pivot[0][i] >= 0 {
 				number = number + 1
@@ -164,6 +185,7 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 				numberfeasible = numberfeasible + 1
 			}
 		}
+
 		if numberfeasible == len(a) {
 			feasible = true
 		}
@@ -171,9 +193,10 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 			break
 		}
 	}
-
 	opt := Pivot[0][columns-1]
+	//checar como evitar este ultimo paso con la solucion, ver por donde viene o previamente sacarla
 
+	//Se puede guardar la columna que tiene solo 1 y ceros, de ahi sacamos la fila y la solucion final de esa variable sera: Solucion[columna guardada digamos la 2]= resultado de la ultima columna de la fila que tiene el 1.
 	for i := 1; i <= len(a); i++ {
 		for j := 1; j <= len(b); j++ {
 			if Pivot[0][i] > 0 {
@@ -185,5 +208,4 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 	}
 
 	return solutions, opt
-
 }
