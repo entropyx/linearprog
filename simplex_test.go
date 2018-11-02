@@ -2,7 +2,6 @@ package linearprog
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -68,22 +67,22 @@ func GetPages(path string) map[string]*Metrics {
 }
 
 func TestSimplex(t *testing.T) {
-	Convey("Given the following matrix maximization problem 1 ...", t, func() {
-		a := []float64{40, 60}
-		b := []float64{70, 40, 90}
-		constdir := []string{"<=", "<=", "<="}
-		A := map[int]map[int]float64{
-			1: map[int]float64{1: 2, 2: 1},
-			2: map[int]float64{1: 1, 2: 1},
-			3: map[int]float64{1: 1, 2: 3},
-		}
-		Convey("The solutions to 1 should be ... ", func() {
-			solutions, _ := Simplex(A, b, a, constdir)
-			out := map[int]float64{0: 15, 1: 25}
-			So(solutions, ShouldResemble, out)
-		})
-	})
-
+	// Convey("Given the following matrix maximization problem 1 ...", t, func() {
+	// 	a := []float64{40, 60}
+	// 	b := []float64{70, 40, 90}
+	// 	constdir := []string{"<=", "<=", "<="}
+	// 	A := map[int]map[int]float64{
+	// 		1: map[int]float64{1: 2, 2: 1},
+	// 		2: map[int]float64{1: 1, 2: 1},
+	// 		3: map[int]float64{1: 1, 2: 3},
+	// 	}
+	// 	Convey("The solutions to 1 should be ... ", func() {
+	// 		solutions, _ := Simplex(A, b, a, constdir)
+	// 		out := map[int]float64{0: 15, 1: 25}
+	// 		So(solutions, ShouldResemble, out)
+	// 	})
+	// })
+	//
 	Convey("Given the following matrix maximization problem 2 ... ", t, func() {
 		a := []float64{3, 2, 5}
 		b := []float64{430, 460, 420}
@@ -100,143 +99,113 @@ func TestSimplex(t *testing.T) {
 		})
 	})
 
-	Convey("Given the following matrix maximization problem 3 ...", t, func() {
-		a := []float64{3, 2}
-		b := []float64{18, 42, 24}
-		constdir := []string{"<=", "<=", "<="}
-		A := map[int]map[int]float64{
-			1: map[int]float64{1: 2, 2: 1},
-			2: map[int]float64{1: 2, 2: 3},
-			3: map[int]float64{1: 3, 2: 1},
-		}
-		Convey("The solutions to 3 should be ... ", func() {
-			solutions, _ := Simplex(A, b, a, constdir)
-			out := map[int]float64{0: 3, 1: 12}
-			So(solutions, ShouldResemble, out)
-		})
-	})
+	// Convey("Given the following matrix maximization problem 3 ...", t, func() {
+	// 	a := []float64{3, 2}
+	// 	b := []float64{18, 42, 24}
+	// 	constdir := []string{"<=", "<=", "<="}
+	// 	A := map[int]map[int]float64{
+	// 		1: map[int]float64{1: 2, 2: 1},
+	// 		2: map[int]float64{1: 2, 2: 3},
+	// 		3: map[int]float64{1: 3, 2: 1},
+	// 	}
+	// 	Convey("The solutions to 3 should be ... ", func() {
+	// 		solutions, _ := Simplex(A, b, a, constdir)
+	// 		out := map[int]float64{0: 3, 1: 12}
+	// 		So(solutions, ShouldResemble, out)
+	// 	})
+	// })
+	//
+	// Convey("Given the following matrix maximization problem 4 ...", t, func() {
+	// 	a := []float64{2, 3, 10, 5, 3}
+	// 	b := []float64{425, 25, 120, 6, 1}
+	// 	constdir := []string{"<=", "<=", "<=", "<=", "<="}
+	// 	A := map[int]map[int]float64{
+	// 		1: map[int]float64{1: 1, 2: 1, 3: 1, 4: 3, 5: 2},
+	// 		2: map[int]float64{1: 2, 2: -4, 3: 1, 4: 0, 5: 0},
+	// 		3: map[int]float64{1: -1, 2: -1, 3: -3, 4: 0, 5: 0},
+	// 		4: map[int]float64{1: 1, 2: 11, 3: 5, 4: 0, 5: 0},
+	// 		5: map[int]float64{1: 1, 2: 1, 3: 7, 4: 0, 5: 0},
+	// 	}
+	// 	Convey("The solutions to 4 should be ... ", func() {
+	// 		solutions, _ := Simplex(A, b, a, constdir)
+	// 		out := map[int]float64{0: 0, 1: 0.51, 2: 0.07, 3: 141.47, 4: 0}
+	// 		So(solutions, ShouldResemble, out)
+	// 	})
+	// })
+	//
+	// Convey("Given the following matrix maximization problem 5 ...", t, func() {
+	// 	a := []float64{225000, 18000, 92000}
+	// 	b := []float64{17000, 1.25, 1.25, 1.25, 1.0, 0.8, 0.1}
+	// 	constdir := []string{"<=", "<=", "<=", "<=", ">=", ">=", ">="}
+	// 	A := map[int]map[int]float64{
+	// 		1: map[int]float64{1: 11000, 2: 988, 3: 5000},
+	// 		2: map[int]float64{1: 1, 2: 0, 3: 0},
+	// 		3: map[int]float64{1: 0, 2: 1, 3: 0},
+	// 		4: map[int]float64{1: 0, 2: 0, 3: 1},
+	// 		5: map[int]float64{1: 1, 2: 0, 3: 0},
+	// 		6: map[int]float64{1: 0, 2: 1, 3: 0},
+	// 		7: map[int]float64{1: 0, 2: 0, 3: 1},
+	// 	}
+	// 	Convey("The solutions to 5 should be ... ", func() {
+	// 		solutions, _ := Simplex(A, b, a, constdir)
+	// 		out := map[int]float64{0: 1.25, 1: 0.8, 2: 0.49}
+	// 		So(solutions, ShouldResemble, out)
+	// 	})
+	// })
 
-	Convey("Given the following matrix maximization problem 4 ...", t, func() {
-		a := []float64{2, 3, 10, 5, 3}
-		b := []float64{425, 25, 120, 6, 1}
-		constdir := []string{"<=", "<=", "<=", "<=", "<="}
-		A := map[int]map[int]float64{
-			1: map[int]float64{1: 1, 2: 1, 3: 1, 4: 3, 5: 2},
-			2: map[int]float64{1: 2, 2: -4, 3: 1, 4: 0, 5: 0},
-			3: map[int]float64{1: -1, 2: -1, 3: -3, 4: 0, 5: 0},
-			4: map[int]float64{1: 1, 2: 11, 3: 5, 4: 0, 5: 0},
-			5: map[int]float64{1: 1, 2: 1, 3: 7, 4: 0, 5: 0},
-		}
-		Convey("The solutions to 4 should be ... ", func() {
-			solutions, _ := Simplex(A, b, a, constdir)
-			out := map[int]float64{0: 0, 1: 0.51, 2: 0.07, 3: 141.47, 4: 0}
-			So(solutions, ShouldResemble, out)
-		})
-	})
+	// Convey("Given the following matrix maximization problem 6 ...", t, func() {
+	// 	a := []float64{1, 1, 2}
+	// 	b := []float64{50, 36, 10}
+	// 	constdir := []string{"<=", ">=", ">="}
+	// 	A := map[int]map[int]float64{
+	// 		1: map[int]float64{1: 2, 2: 1, 3: 1},
+	// 		2: map[int]float64{1: 2, 2: 1, 3: 0},
+	// 		3: map[int]float64{1: 1, 2: 0, 3: 1},
+	// 	}
+	// 	Convey("The solutions to 3 should be ... ", func() {
+	// 		solutions, _ := Simplex(A, b, a, constdir)
+	// 		out := map[int]float64{0: 0, 1: 36, 2: 14}
+	// 		So(solutions, ShouldResemble, out)
+	// 	})
+	// })
+	//
+	// Convey("Given the following matrix maximization problem 7 ...", t, func() {
+	// 	a := []float64{1450, 1450, 1450, 3950}
+	// 	b := []float64{40064, 1.25, 1.25, 1.25, 1.25, 0.96, 0.68, 0.39, 0.1}
+	// 	constdir := []string{"<=", "<=", "<=", "<=", "<=", ">=", ">=", ">=", ">="}
+	// 	A := map[int]map[int]float64{
+	// 		1: map[int]float64{1: 1430.86, 2: 1430.86, 3: 1430.86, 4: 1430.86},
+	// 		2: map[int]float64{1: 1, 2: 0, 3: 0, 4: 0},
+	// 		3: map[int]float64{1: 0, 2: 1, 3: 0, 4: 0},
+	// 		4: map[int]float64{1: 0, 2: 0, 3: 1, 4: 0},
+	// 		5: map[int]float64{1: 0, 2: 0, 3: 0, 4: 1},
+	// 		6: map[int]float64{1: 1, 2: 0, 3: 0, 4: 0},
+	// 		7: map[int]float64{1: 0, 2: 1, 3: 0, 4: 0},
+	// 		8: map[int]float64{1: 0, 2: 0, 3: 1, 4: 0},
+	// 		9: map[int]float64{1: 0, 2: 0, 3: 0, 4: 1},
+	// 	}
+	// 	Convey("The solutions to 7 should be ... ", func() {
+	// 		solutions, _ := Simplex(A, b, a, constdir)
+	// 		out := map[int]float64{0: 1.25, 1: 1.25, 2: 1.25, 3: 1.25}
+	// 		So(solutions, ShouldResemble, out)
+	// 	})
+	// })
 
-	Convey("Given the following matrix maximization problem 5 ...", t, func() {
-		a := []float64{225000, 18000, 92000}
-		b := []float64{17000, 1.25, 1.25, 1.25, 1.0, 0.8, 0.1}
-		constdir := []string{"<=", "<=", "<=", "<=", ">=", ">=", ">="}
+	Convey("Given the following matrix maximization problem 8 ...", t, func() {
+		a := []float64{1, 24, 10}
+		b := []float64{84.75, 2.5, 3.5, 0.5}
+		constdir := []string{"=", "<=", "<=", "<="}
 		A := map[int]map[int]float64{
-			1: map[int]float64{1: 11000, 2: 988, 3: 5000},
+			1: map[int]float64{1: 5, 2: 25, 3: 0.5},
 			2: map[int]float64{1: 1, 2: 0, 3: 0},
 			3: map[int]float64{1: 0, 2: 1, 3: 0},
 			4: map[int]float64{1: 0, 2: 0, 3: 1},
-			5: map[int]float64{1: 1, 2: 0, 3: 0},
-			6: map[int]float64{1: 0, 2: 1, 3: 0},
-			7: map[int]float64{1: 0, 2: 0, 3: 1},
-		}
-		Convey("The solutions to 5 should be ... ", func() {
-			solutions, _ := Simplex(A, b, a, constdir)
-			out := map[int]float64{0: 1.25, 1: 0.8, 2: 0.49}
-			So(solutions, ShouldResemble, out)
-		})
-	})
-
-	Convey("Given the following matrix maximization problem 6 ...", t, func() {
-		a := []float64{1, 1, 2}
-		b := []float64{50, 36, 10}
-		constdir := []string{"<=", ">=", ">="}
-		A := map[int]map[int]float64{
-			1: map[int]float64{1: 2, 2: 1, 3: 1},
-			2: map[int]float64{1: 2, 2: 1, 3: 0},
-			3: map[int]float64{1: 1, 2: 0, 3: 1},
 		}
 		Convey("The solutions to 3 should be ... ", func() {
 			solutions, _ := Simplex(A, b, a, constdir)
-			out := map[int]float64{0: 0, 1: 36, 2: 14}
+			out := map[int]float64{0: 0, 1: 3.38, 2: 0.5}
 			So(solutions, ShouldResemble, out)
 		})
-	})
-
-	Convey("Given the following matrix maximization problem 7 ...", t, func() {
-		a := []float64{1450, 1450, 1450, 3950}
-		b := []float64{40064, 1.25, 1.25, 1.25, 1.25, 0.96, 0.68, 0.39, 0.1}
-		constdir := []string{"<=", "<=", "<=", "<=", "<=", ">=", ">=", ">=", ">="}
-		A := map[int]map[int]float64{
-			1: map[int]float64{1: 1430.86, 2: 1430.86, 3: 1430.86, 4: 1430.86},
-			2: map[int]float64{1: 1, 2: 0, 3: 0, 4: 0},
-			3: map[int]float64{1: 0, 2: 1, 3: 0, 4: 0},
-			4: map[int]float64{1: 0, 2: 0, 3: 1, 4: 0},
-			5: map[int]float64{1: 0, 2: 0, 3: 0, 4: 1},
-			6: map[int]float64{1: 1, 2: 0, 3: 0, 4: 0},
-			7: map[int]float64{1: 0, 2: 1, 3: 0, 4: 0},
-			8: map[int]float64{1: 0, 2: 0, 3: 1, 4: 0},
-			9: map[int]float64{1: 0, 2: 0, 3: 0, 4: 1},
-		}
-		Convey("The solutions to 7 should be ... ", func() {
-			solutions, _ := Simplex(A, b, a, constdir)
-			out := map[int]float64{0: 1.25, 1: 1.25, 2: 1.25, 3: 1.25}
-			So(solutions, ShouldResemble, out)
-		})
-	})
-
-	Convey("Proof of Doto...", t, func() {
-		//var date,avgcpc,clicks,roas,prices,impressions,conversions,cost,totalvalueconversion type
-		//today := time.Now()
-		//layout := "2006-01-02"
-		path := "/src/github.com/entropyx/linearprog/doto.json"
-		data := GetPages(path)
-		//max, _ := time.Parse(layout, "2017-08-22")
-		fmt.Println(data)
-
-		fmt.Println(data["shopify_mx_1098781261868_10619801862188"].Clicks)
-
-		// for k := range data {
-		// 	l := len(data[k].Date)
-		// 	for i := 0; i < l; i++ {
-		// 		date, _ := time.Parse(layout, data[k].Date[i])
-		// 		if int(max.Sub(date).Hours()/24) < 0 {
-		// 			max = date
-		// 		}
-		// 		if data[k].ProductCost == nil {
-		// 			data[k].ProductCost = []float64{}
-		// 		}
-		// 		data[k].ProductCost = append(data[k].ProductCost, data[k].Prices[i]/(1.0+0.2))
-		// 		data[k].ImpressionShare[i] = data[k].ImpressionShare[i] * 100
-		// 	}
-		// }
-		//
-		// days := int(today.Sub(max).Hours() / 24)
-		//
-		// for k := range data {
-		// 	l := len(data[k].Date)
-		// 	for i := 0; i < l; i++ {
-		// 		date, _ := time.Parse(layout, data[k].Date[i])
-		// 		data[k].Date[i] = date.AddDate(0, 0, days).Format(layout)
-		// 	}
-		// 	data[k].CpcBrand = 1.00
-		// 	data[k].CpcCategory = 1.00
-		// }
-		//
-		// fmt.Println(data["shopify_mx_1098781261868_10619801862188"].AvgCPC)
-
-		// Convey("The solutions to dataset of doto...", func() {
-		// 	solutions, _ := Simplex(A, b, a, constdir)
-		// 	out := map[int]float64{0: 1.25, 1: 1.25, 2: 1.25, 3: 1.25}
-		// 	So(solutions, ShouldResemble, out)
-		// })
 	})
 
 }
