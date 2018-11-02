@@ -1,7 +1,6 @@
 package linearprog
 
 import (
-	"fmt"
 	"math"
 	"runtime"
 )
@@ -149,10 +148,10 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 		}
 		/////////////////////////////
 		elementpivot := Pivot[rowspivot][colpivot]
-		fmt.Println("elmento", elementpivot)
+		//fmt.Println("elmento", elementpivot)
 		for j := 0; j < columns; j++ {
 			Pivot[rowspivot][j] = float64(Pivot[rowspivot][j]) / float64(elementpivot)
-			fmt.Println("cociente", Pivot[rowspivot][j])
+			//fmt.Println("cociente", Pivot[rowspivot][j])
 		}
 		///////////////////////////mejorar ver como pasar el tipo de datos anteriores a funciones
 		c := make(chan map[int]map[int]float64)
@@ -211,7 +210,6 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 		}
 	}
 
-	fmt.Println("valor opt", opt, "soluciones", solutions)
 	return solutions, opt
 
 }
