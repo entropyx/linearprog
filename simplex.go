@@ -13,7 +13,6 @@ func Round(number float64, precision int) float64 {
 	return out
 }
 
-//Aqui se puede mejorar si se consigue una recurrencia de los 0, cada cuanto hay cero, entonces no sumarlo.
 func DifferenceRows(Pivot map[int]map[int]float64, rowsids []int, colpivot, rowspivot, columns int, c chan map[int]map[int]float64) {
 	Pivot2 := make(map[int]map[int]float64)
 	numberrows := len(rowsids)
@@ -31,20 +30,12 @@ func DifferenceRows(Pivot map[int]map[int]float64, rowsids []int, colpivot, rows
 	c <- Pivot2
 }
 
-//func InitMap(rows, columns int) map[int]map[int]float64 {
 func InitMap(rows int) map[int]map[int]float64 {
 	Pivot := make(map[int]map[int]float64)
 
 	for i := 0; i < rows; i++ {
 		Pivot[i] = map[int]float64{}
 	}
-
-	// for i := 0; i < rows; i++ {
-	// 	Pivot[i] = map[int]float64{}
-	// 	for j := 0; j < columns; j++ {
-	// 		Pivot[i][j] = 0
-	// 	}
-	// }
 	return Pivot
 }
 
@@ -65,16 +56,6 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 	solutions := make(map[int]float64)
 	rows = len(b) + 1
 	columns = len(a) + len(b) + 2
-
-	//
-	// for i := 0; i < rows; i++ {
-	// 	Pivot[i] = map[int]float64{}
-	// }
-	// for i := 0; i < rows; i++ {
-	// 	for j := 0; j < columns; j++ {
-	// 		Pivot[i][j] = 0
-	// 	}
-	// }
 	Pivot := InitMap(rows)
 
 	Pivot[0][0] = 1.00
@@ -96,7 +77,6 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 	}
 
 	N, n := PartitionForGorutine(Pivot)
-
 	r := 0.00
 	var rowsids [][]int
 	var ids []int
@@ -194,9 +174,7 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 		}
 	}
 	opt := Pivot[0][columns-1]
-	//checar como evitar este ultimo paso con la solucion, ver por donde viene o previamente sacarla
 
-	//Se puede guardar la columna que tiene solo 1 y ceros, de ahi sacamos la fila y la solucion final de esa variable sera: Solucion[columna guardada digamos la 2]= resultado de la ultima columna de la fila que tiene el 1.
 	for i := 1; i <= len(a); i++ {
 		for j := 1; j <= len(b); j++ {
 			if Pivot[0][i] > 0 {
