@@ -121,13 +121,14 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 					min = Pivot[0][i]
 				}
 			}
+
 		}
 
 		min = math.Inf(1)
 		rowspivot := 1
 		for k := 1; k < rows; k++ {
 			v := float64(Pivot[k][columns-1]) / float64(Pivot[k][colpivot])
-			if v > 0 {
+			if v >= 0 {
 				if min > v {
 					min = v
 					rowspivot = k
