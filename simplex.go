@@ -47,9 +47,9 @@ func Simplex(A map[int]map[int]float64, b []float64, a []float64, constdir []str
 		}
 	}
 
-	solutions, opt := par.GetSolution()
+	solution, opt := par.GetSolution()
 
-	return solutions, opt
+	return solution, opt
 }
 
 func (par *Parameter) InitPivot() {
@@ -136,11 +136,13 @@ func (par *Parameter) RowPivot() {
 	min := math.Inf(1)
 	par.Rpivot = 1
 	for k := 1; k < par.Nrows; k++ {
-		v := float64(par.Pivot[k][par.Ncols-1]) / float64(par.Pivot[k][par.Cpivot])
-		if v >= 0 {
-			if min > v {
-				min = v
-				par.Rpivot = k
+		if par.Pivot[k][par.Cpivot] > 0 {
+			v := par.Pivot[k][par.Ncols-1] / par.Pivot[k][par.Cpivot]
+			if v >= 0 {
+				if min > v {
+					min = v
+					par.Rpivot = k
+				}
 			}
 		}
 	}
@@ -149,7 +151,7 @@ func (par *Parameter) RowPivot() {
 func (par *Parameter) PutOneInPivot() {
 	elementpivot := par.Pivot[par.Rpivot][par.Cpivot]
 	for j := 0; j < par.Ncols; j++ {
-		par.Pivot[par.Rpivot][j] = float64(par.Pivot[par.Rpivot][j]) / float64(elementpivot)
+		par.Pivot[par.Rpivot][j] = par.Pivot[par.Rpivot][j] / elementpivot
 	}
 }
 
